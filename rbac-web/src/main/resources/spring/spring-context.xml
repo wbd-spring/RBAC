@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+   
+   <!-- spring 容器初始化，不扫描springmvc的控制器， 让springmvc自己去实例化对象 -->
+    <context:component-scan base-package="com.wbd.*" >
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+    
+    <!-- 数据源， 采用c3p0数据库连接池， 提高访问数据库的性能 -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" >
+        <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://118.190.71.215:3306/project?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=utf8"/>
+        <property name="user" value="rmtuser"/>
+        <property name="password" value="123456"/>
+    </bean>
+    
+    <!-- 扫描 mybatis接口的xml文件  -->
+    
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" >
+        <property name="configLocation" value="classpath:mybatis/config.xml" />
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" >
+            <list>
+                <value>classpath*:mybatis/mapper-*.xml</value>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- 扫描dao的包 -->
+    <bean id="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer" >
+        <property name="basePackage" value="com.wbd.manager.**.dao" />
+    </bean>
+    
+    <!-- 事物管理器的声明 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" >
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    
+    <tx:advice id="transactionAdvice" transaction-manager="transactionManager" >
+        <tx:attributes>
+            <tx:method name="*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="java.lang.Exception" />
+            <tx:method name="query*" read-only="true" />
+        </tx:attributes>
+    </tx:advice>    
+    <aop:config>
+        <aop:advisor advice-ref="transactionAdvice" pointcut="execution(* com.wbd..*Service.*(..))"/>
+    </aop:config>
+</beans>
