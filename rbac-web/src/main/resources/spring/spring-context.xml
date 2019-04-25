@@ -6,8 +6,8 @@
     xmlns:aop="http://www.springframework.org/schema/aop"
     xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd" >
    
    <!-- spring 容器初始化，不扫描springmvc的控制器， 让springmvc自己去实例化对象 -->
     <context:component-scan base-package="com.wbd.*" >
@@ -17,8 +17,8 @@
     <!-- 数据源， 采用c3p0数据库连接池， 提高访问数据库的性能 -->
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" >
         <property name="driverClass" value="com.mysql.jdbc.Driver"/>
-        <property name="jdbcUrl" value="jdbc:mysql://118.190.71.215:3306/project?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=utf8"/>
-        <property name="user" value="rmtuser"/>
+        <property name="jdbcUrl" value="jdbc:mysql://118.190.71.215:3308/project?rewriteBatchedStatements=true&amp;useUnicode=true&amp;characterEncoding=utf8"/>
+        <property name="user" value="root"/>
         <property name="password" value="123456"/>
     </bean>
     
@@ -46,6 +46,7 @@
     
     <tx:advice id="transactionAdvice" transaction-manager="transactionManager" >
         <tx:attributes>
+        <!--REQUIRED 需要事务，isolation =default表示采用数据库的默认事务级别，mysql的事务级别为可重复读  -->
             <tx:method name="*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="java.lang.Exception" />
             <tx:method name="query*" read-only="true" />
         </tx:attributes>
