@@ -4,14 +4,37 @@
 
 	<select id="pageQueryData"
 		resultType="com.rbac.common.pojo.User">
-		select * from tb_user limit #{start},#{size}
+		
+		select * 
+		
+		from tb_user
+		
+		<where>
+			<if test="queryText!=null">
+			
+				and account like concat('%',#{queryText},'%')
+
+			</if>
+		</where>
+
+		limit #{start},#{size}
 
 	</select>
 
 
 	<select id="pageQueryCount" resultType="java.lang.Integer">
 
-		select count(1) from tb_user
+		select count(1) from
+		
+		tb_user
+		
+		<where>
+			<if test="queryText!=null">
+			
+				and account like concat('%',#{queryText},'%')
+
+			</if>
+		</where>
 	</select>
 
 </mapper>
