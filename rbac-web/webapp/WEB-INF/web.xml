@@ -14,6 +14,11 @@
     </listener>
     
     
+    <!-- 配置路径监听器，为项目统一路径，避免路径管理混乱 -->
+    <listener>
+    
+    <listener-class>com.wbd.web.listener.ServerStarupListener</listener-class>
+    </listener>
     
     <!-- 解决乱码过滤器 -->
      <filter>

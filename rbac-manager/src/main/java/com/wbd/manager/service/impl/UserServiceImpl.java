@@ -1,6 +1,7 @@
 package com.wbd.manager.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,15 @@ public class UserServiceImpl implements UserService {
 	public User queryUserByConditon(User user) {
 		
 		return userDao.queryUserByCondition(user);
+	}
+
+	public List<User> pageQueryData(Map<String, Object> map) {
+
+		return userDao.pageQueryData(map);
+	}
+
+	public int pageQueryCount(Map<String, Object> map) {
+		return userDao.pageQueryCount(map);
 	}
 
 }

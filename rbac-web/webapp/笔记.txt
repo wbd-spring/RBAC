@@ -1,0 +1,86 @@
+<script>
+
+ 1. 对象的定义
+ 
+  //定义对象
+    function Student(){
+     this.name='zs';
+     this.age=20;
+    }
+
+    //访问对象
+    var s = new Student();
+    alert(s.age);
+    s.age=30;
+    alert(s.age);
+    //js支持给对象动态添加属性，但是只对象某一个对象，
+    s.address="abc";
+    alert(s.address);
+    
+    var b = new Student();
+    //该对象没有address属性，因为没有动态添加， 只是上面动态给s对象添加了， 而b对象没有添加， 故此
+    //b对象中不存在address属性
+    alert(b.address);
+    
+    
+ 2. 声明json对象
+ 
+    //声明json对象
+    var obj = {name:"lisi",age:100};  //多个属性用逗号隔开
+    alert(obj.name)
+    
+    
+    
+ 3. 声明json数组对象
+    //声明数组，数组中可以存入任何类型，如果返回时多个json，我们可以存入到数组中
+    
+    var array = [{name:'zs',age:100},{name:'ww',age:20}];  //每个json对象采用{}，多个json对象采用逗号隔开
+    alert(array[0].name);
+    alert(array.length);
+    
+    
+    
+    
+ 4. 变量的作用域
+  
+   
+    //用var声明的变量为局部变量
+    //不用var声明的变量为全局变量
+    function test(){
+    
+    var c = 123;  //c为局部变量， 有限范围在test函数内
+    d = 456;  //d为全局变量  等于 window.d=456  任何地方都可以访问
+    
+    }
+    
+    test();
+   // alert(c);  c为局部变量， 所以此时在这里访问，就会出现 为定义的异常
+    
+    alert(d);
+    
+    alert(name);  //alert==window.alert,    d=456 等于 window.d=456  为全局变量
+    
+    
+5. 前台路径和后台路径
+    1.前台路径，也是浏览器的路径    <a href="user/index">    这表示请求的是 后台的控制器最后的路径  localhost:8080/web/user/index
+    2.在前台加/ 表示是 服务器的根 localhost:8080，比如：<link rel="stylesheet" href="/css/main.css">  
+    最后css为   localhost:8080/css/main.css,所以尽量不要在前台路径上添加/,除非前台的路径前部分来着后台的一个变量，该变量存放的路径是存放在application
+    内
+    
+    3.如果后台路径加/ ,会带上应用的名称，比如在springmvc配置文件中  <property name="prefix" value="/WEB-INF/jsp/"/>
+    
+    最后映射的结果为： localhost:8080/web/WEB-INF/jsp ,  也就是加了/，变成了localhost:8080/web
+    
+    举例； 添加斜杠(/)
+    
+    url=http://localhost:8080/web/test/index.jsp
+    
+    前台路径：<a href="/index.jsp>
+      相对服务器的根:http://localhost:8080,所以上面等于http://localhost:8080/index.jsp,无法找到，导致有误
+ 
+ 后台路径： forward("/user.jsp")
+    
+      相对web服务器的根
+      http://localhost:8080/web/,最后的结果为   http://localhost:8080/web/user.jsp
+    
+</script>

@@ -88,6 +88,7 @@
 			
 			//$("#loginForm").submit();
 
+			var loadingIndex =null;
 			//采用jquery Ajax 异步请求的方式提交表单，目的，体验更好，不用刷新页面，
 			
 			$.ajax({
@@ -102,13 +103,13 @@
 					loadingIndex = layer.msg('处理中', {icon: 16});
 				},
 				
-				success: function(result){  //异步请求，服务器返回的响应（服务器返回的内容在变量result中），不管返回什么内容， 都进入到success进行处理， 我们拿到服务器返回的内容做进一步处理
-					
+				success: function(result){  //异步请求后服务器成功返回响应所执行的方法为success，服务器返回的响应（服务器返回的内容在变量result中），不管返回什么内容， 都进入到success进行处理， 我们拿到服务器返回的内容做进一步处理
 					//服务器返回内容，我们应该把进度条隐藏起来
 					layer.close(loadingIndex);
 				
-				if(result.success){ //如果返回字段中success=true，跳转到主页
+				if(result.success){ //如果返回字段中success=true，跳转到main主页,还是通过控制器进行跳转
 					
+					window.location.href="main";
 					
 				}else{  //提示信息
 					
