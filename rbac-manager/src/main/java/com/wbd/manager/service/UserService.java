@@ -15,4 +15,10 @@ public interface UserService {
 
 	int pageQueryCount(Map<String, Object> map);
 
+	void insert(User user);
+
+	User queryUserById(Integer id);
+
+	void updateUser(User user);
+
 }

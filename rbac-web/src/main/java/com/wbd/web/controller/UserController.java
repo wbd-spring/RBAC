@@ -1,5 +1,7 @@
 package com.wbd.web.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,5 +150,53 @@ public class UserController {
 		
 		return result;
 	}
+	
+	@RequestMapping("/add")
+	public String add() {
+		return "user/add";
+	}
+	
+	@RequestMapping("/insert")
+	@ResponseBody
+	public Object insert(User user) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		AJAXResult  result = new AJAXResult();
+		user.setPwd("123456");
+		user.setCreatetime(sdf.format(new Date()));
+		try {
+			us.insert(user);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+		}
+		return result;
+	}
+	
+	
+	
+	@RequestMapping("/edit")
+	public String edit(Integer id,Model model) {
+		User user  = us.queryUserById(id);
+		model.addAttribute("user", user);
+		return "user/edit";
+	}
+	
+	@RequestMapping("/update")
+	@ResponseBody 
+	public Object update(User user) {
+		AJAXResult  result = new AJAXResult();
+		
+		try {
+			us.updateUser(user);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(true);
+		}
+		
+		return result;
+	}
+	
 
 }

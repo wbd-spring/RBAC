@@ -150,7 +150,7 @@ table tbody td:nth-child(even) {
 							<i class=" glyphicon glyphicon-remove"></i> 删除
 						</button>
 						<button type="button" class="btn btn-primary"
-							style="float: right;" onclick="window.location.href='add.html'">
+							style="float: right;" onclick="window.location.href='${APP_PATH}/user/add'">
 							<i class="glyphicon glyphicon-plus"></i> 新增
 						</button>
 						<br>
@@ -244,7 +244,7 @@ table tbody td:nth-child(even) {
         	  
         		  var loadingIndex =null;
         		  var jsonData = {"pageNum":pageNum,"pageSize":2};
-        		  if(likeflg==true){
+        		  if(likeflg){
         			  
         			  jsonData.queryText = $("#queryText").val();
         		  }
@@ -292,7 +292,7 @@ table tbody td:nth-child(even) {
 							tableContext += '		<button type="button" class="btn btn-success btn-xs">';
 							tableContext += '			<i class=" glyphicon glyphicon-check"></i>';
 							tableContext += '		</button>';
-							tableContext += '		<button type="button" class="btn btn-primary btn-xs">';
+							tableContext += '		<button type="button" onclick="edit('+user.id+')" class="btn btn-primary btn-xs">';
 							tableContext += '			<i class=" glyphicon glyphicon-pencil"></i>';
 							tableContext += '		</button>';
 							tableContext += '		<button type="button" class="btn btn-danger btn-xs">';
@@ -358,6 +358,12 @@ table tbody td:nth-child(even) {
         		  
         	  });
         	  
+          }
+          
+          
+          function edit(id){
+        	  
+        	  window.location.href="${APP_PATH}/user/edit?id="+id;
           }
           
         </script>

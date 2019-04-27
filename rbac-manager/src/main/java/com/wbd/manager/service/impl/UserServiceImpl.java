@@ -35,4 +35,19 @@ public class UserServiceImpl implements UserService {
 		return userDao.pageQueryCount(map);
 	}
 
+	public void insert(User user) {
+		userDao.insert(user);
+		
+	}
+
+	public User queryUserById(Integer id) {
+		// TODO Auto-generated method stub
+		return userDao.queryUserById( id);
+	}
+
+	public void updateUser(User user) {
+		userDao.updateUser(user);
+		
+	}
+
 }
