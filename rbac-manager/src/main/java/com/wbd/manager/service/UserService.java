@@ -21,4 +21,8 @@ public interface UserService {
 
 	void updateUser(User user);
 
+	void removeUserById(Integer id);
+
+	void deleteUsers(Map map);
+
 }

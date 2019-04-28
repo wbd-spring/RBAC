@@ -3,6 +3,7 @@ package com.wbd.manager.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -33,4 +34,10 @@ public interface UserDao {
 
     @Update("update tb_user set account=#{account},username=#{username},email=#{email} where id=#{id}")
 	void updateUser(User user);
+
+    @Delete("delete from tb_user where id=#{id}")
+	void removeUserById(Integer id);
+
+
+	void deleteUsers(Map map);
 }

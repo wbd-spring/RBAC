@@ -50,4 +50,14 @@ public class UserServiceImpl implements UserService {
 		
 	}
 
+	public void removeUserById(Integer id) {
+		userDao.removeUserById(id);
+		
+	}
+
+	public void deleteUsers(Map map) {
+		userDao.deleteUsers(map);
+		
+	}
+
 }

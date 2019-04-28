@@ -137,52 +137,55 @@ table tbody td:nth-child(even) {
 							<div class="form-group has-feedback">
 								<div class="input-group">
 									<div class="input-group-addon">查询条件</div>
-									<input id="queryText" class="form-control has-success" type="text"
-										placeholder="请输入查询条件">
+									<input id="queryText" class="form-control has-success"
+										type="text" placeholder="请输入查询条件">
 								</div>
 							</div>
 							<button id="queryBtn" type="button" class="btn btn-warning">
 								<i class="glyphicon glyphicon-search"></i> 查询
 							</button>
 						</form>
-						<button type="button" class="btn btn-danger"
-							style="float: right; margin-left: 10px;">
+						<button type="button" onclick="deleteUsers()"
+							class="btn btn-danger" style="float: right; margin-left: 10px;">
 							<i class=" glyphicon glyphicon-remove"></i> 删除
 						</button>
 						<button type="button" class="btn btn-primary"
-							style="float: right;" onclick="window.location.href='${APP_PATH}/user/add'">
+							style="float: right;"
+							onclick="window.location.href='${APP_PATH}/user/add'">
 							<i class="glyphicon glyphicon-plus"></i> 新增
 						</button>
 						<br>
 						<hr style="clear: both;">
 						<div class="table-responsive">
-							<table class="table  table-bordered">
-								<thead>
-									<tr>
-										<th width="30">#</th>
-										<th width="30"><input type="checkbox"></th>
-										<th>账号</th>
-										<th>名称</th>
-										<th>邮箱地址</th>
-										<th width="100">操作</th>
-									</tr>
-								</thead>
-								<tbody id="userData">
-									
-								</tbody>
-								<tfoot>
-									<tr>
-										<td colspan="6" align="center">
-											<ul class="pagination">
+							<form id="userForm">
+								<table class="table  table-bordered">
+									<thead>
+										<tr>
+											<th width="30">#</th>
+											<th width="30"><input type="checkbox" id="allSelBox"></th>
+											<th>账号</th>
+											<th>名称</th>
+											<th>邮箱地址</th>
+											<th width="100">操作</th>
+										</tr>
+									</thead>
+									<tbody id="userData">
 
-											
+									</tbody>
+									<tfoot>
+										<tr>
+											<td colspan="6" align="center">
+												<ul class="pagination">
 
-											</ul>
-										</td>
-									</tr>
 
-								</tfoot>
-							</table>
+
+												</ul>
+											</td>
+										</tr>
+
+									</tfoot>
+								</table>
+							</form>
 						</div>
 					</div>
 				</div>
@@ -195,177 +198,279 @@ table tbody td:nth-child(even) {
 	<script src="${APP_PATH}/script/docs.min.js"></script>
 	<script src="${APP_PATH}/layer/layer.js"></script>
 	<script type="text/javascript">
-	 //模糊查询标志，默认查询所有，不带条件
-	  var likeflg = false;
-            $(function () {
-			    $(".list-group-item").click(function(){
-				    if ( $(this).find("ul") ) {
-						$(this).toggleClass("tree-closed");
-						if ( $(this).hasClass("tree-closed") ) {
-							$("ul", this).hide("fast");
-						} else {
-							$("ul", this).show("fast");
+		//模糊查询标志，默认查询所有，不带条件
+		var likeflg = false;
+		$(function() {
+			$(".list-group-item").click(function() {
+				if ($(this).find("ul")) {
+					$(this).toggleClass("tree-closed");
+					if ($(this).hasClass("tree-closed")) {
+						$("ul", this).hide("fast");
+					} else {
+						$("ul", this).show("fast");
+					}
+				}
+			});
+		});
+
+		//页面加载完成时，异步去请求 分页数据
+		pageQuery(1); //默认加载第一页数据
+
+		//给查询button添加查询事件
+		$("#queryBtn").click(function() {
+
+			var queryText = $("#queryText").val();
+
+			if (queryText == '') {
+
+				likeflg = false;
+			} else {
+
+				likeflg = true;
+			}
+			pageQuery(1);
+
+		});
+
+		$("tbody .btn-success").click(function() {
+			window.location.href = "assignRole.html";
+		});
+		$("tbody .btn-primary").click(function() {
+			window.location.href = "edit.html";
+		});
+
+		//采用 AJax异步加载的方式，实现分页，先通过控制器跳转到列表页面， 此时页面没有数据
+		//当页面加载完成，然后执行ajax 异步发送 分页请求，得到数据， 再渲染分页数据，提高性能与用户体验
+
+		//Ajax 分页查询
+		function pageQuery(pageNum) {
+
+			var loadingIndex = null;
+			var jsonData = {
+				"pageNum" : pageNum,
+				"pageSize" : 2
+			};
+			if (likeflg) {
+
+				jsonData.queryText = $("#queryText").val();
+			}
+			$
+					.ajax({
+						type : "post",
+						url : "${APP_PATH}/user/queryPage",
+						data : jsonData,
+						beforeSend : function() {
+
+							loadingIndex = layer.msg('处理中', {
+								icon : 16
+							});
+						},
+						success : function(result) {
+							layer.close(loadingIndex);
+
+							if (result.success) {
+
+								//局部刷新分页数据
+								var tableContext = "";
+								var pageContext = "";
+
+								//拿到服务器端的数据，  Page对象,服务器端AJAXResult 有 data与success，data存放的就是相关分页数据
+
+								var userPage = result.data;
+
+								//通过page对象获取 用户列表数据，Page对象中有一个datas属性，用来存放所有用户列表信息
+								var users = userPage.datas;
+
+								//-------------------表格数据----------------
+
+								//对users进行循环遍历，通过ajax each 循环 
+								//  alt+shift +a 列编辑
+								$
+										.each(
+												users,
+												function(i, user) { //users表示对哪个集合进行循环， i为每次遍历的索引，user表示每次循环的临时对象
+													//每次循环其实就是一行数据， 即为每次是一个user对象，对行进行拼接，最后把内容赋给tableContext变量
+
+													tableContext += '<tr>';
+													tableContext += '	<td>'
+															+ (i + 1) + '</td>'; //当前索引为0，所以要加1
+													tableContext += '	<td><input type="checkbox" name="userid" value="'+user.id+'"></td>';
+													tableContext += '	<td>'
+															+ user.account
+															+ '</td>';
+													tableContext += '	<td>'
+															+ user.username
+															+ '</td>';
+													tableContext += '	<td>'
+															+ user.email
+															+ '</td>';
+													tableContext += '	<td>';
+													tableContext += '		<button type="button" class="btn btn-success btn-xs">';
+													tableContext += '			<i class=" glyphicon glyphicon-check"></i>';
+													tableContext += '		</button>';
+													tableContext += '		<button type="button" onclick="edit('
+															+ user.id
+															+ ')" class="btn btn-primary btn-xs">';
+													tableContext += '			<i class=" glyphicon glyphicon-pencil"></i>';
+													tableContext += '		</button>';
+													tableContext += '		<button type="button" onclick="deleteUser('
+															+ user.id
+															+ ',\''
+															+ user.account
+															+ '\')" class="btn btn-danger btn-xs">';
+													tableContext += '			<i class=" glyphicon glyphicon-remove"></i>';
+													tableContext += '		</button>';
+													tableContext += '	</td>';
+													tableContext += '/tr>';
+
+												});
+
+								//-------------------页码数据----------------
+
+								//对上一页的判断
+
+								if (pageNum > 1) {
+									pageContext += '<li><a href="#" onclick="pageQuery('
+											+ (pageNum - 1) + ')">上一页</a></li>';
+
+								}
+
+								//对总页码进行循环
+
+								for (var i = 1; i <= userPage.totalPage; i++) {
+
+									if (pageNum == i) {
+
+										pageContext += '<li class="active"><a href="#">'
+												+ i + '</a></li>';
+
+									} else {
+
+										pageContext += '<li><a href="#" onclick="pageQuery('
+												+ i + ')">' + i + '</a></li>';
+
+									}
+								}
+
+								//对下一页进行判断， 总页码已经在page对象中返回了
+								if (pageNum < userPage.totalPage) {
+
+									pageContext += '<li><a href="#" onclick="pageQuery('
+											+ (pageNum + 1) + ')">下一页</a></li>';
+								}
+
+								//最后把 拼接的变量tableContext,pageContext内容通过ajax渲染到 分页table组件中去
+
+								$("#userData").html(tableContext); //#为id选择器
+
+								$(".pagination").html(pageContext); //.为class选择器
+
+							} else {
+
+								layer.msg("分页数据失败，请重试......", {
+									time : 2000,
+									icon : 5,
+									shift : 6
+								}, function() {
+
+								});
+							}
+
+						}
+
+					});
+
+		}
+
+		function edit(id) {
+
+			window.location.href = "${APP_PATH}/user/edit?id=" + id;
+		}
+
+		$("#allSelBox").click(function() {
+			var flag = this.checked;
+			$("#userData :checkbox").each(function() {
+				this.checked = flag;
+			});
+
+		});
+
+		//删除所有
+		function deleteUsers() {
+
+			var boxes = $("#userData :checkbox");
+			var v = $("#userForm").serialize();
+			if (boxes.length == 0 || v == '') {
+
+				alert("请求选择用户");
+
+			} else {
+				
+				$.ajax({
+					
+					url:"${APP_PATH}/user/deleteUsers",
+					type:"post",
+					data:v,
+					success:function(result){
+						
+						if(result.success){
+							pageQuery(1);
+						}else{
+							
+							alert("删除失败");
 						}
 					}
+					
+					
 				});
-            });
-            
-            //页面加载完成时，异步去请求 分页数据
-            pageQuery(1); //默认加载第一页数据
-            
-            //给查询button添加查询事件
-            $("#queryBtn").click(function(){
-            	
-            	var queryText = $("#queryText").val();
-            	
-            	if(queryText==''){
-            		
-            		likeflg = false;
-            	}else{
-            		
-            		likeflg = true;
-            	}
-            	  pageQuery(1);
-            	
-            });
-            
-            $("tbody .btn-success").click(function(){
-                window.location.href = "assignRole.html";
-            });
-            $("tbody .btn-primary").click(function(){
-                window.location.href = "edit.html";
-            });
-            
-          //采用 AJax异步加载的方式，实现分页，先通过控制器跳转到列表页面， 此时页面没有数据
-          //当页面加载完成，然后执行ajax 异步发送 分页请求，得到数据， 再渲染分页数据，提高性能与用户体验
-          
-            //Ajax 分页查询
-          function pageQuery(pageNum){
-        	  
-        		  var loadingIndex =null;
-        		  var jsonData = {"pageNum":pageNum,"pageSize":2};
-        		  if(likeflg){
-        			  
-        			  jsonData.queryText = $("#queryText").val();
-        		  }
-        	  $.ajax({
-        		  type:"post",
-        		  url:"${APP_PATH}/user/queryPage",
-        		  data:jsonData,
-        		  beforeSend:function(){
-        			  
-        			  loadingIndex = layer.msg('处理中', {icon: 16});
-        		  },
-        		  success:function(result){
-        			  layer.close(loadingIndex);
-        			  
-        			  if(result.success){
-        				 
-        				  //局部刷新分页数据
-        				  var tableContext = "";
-        				  var pageContext = "";
-        				  
-        				  //拿到服务器端的数据，  Page对象,服务器端AJAXResult 有 data与success，data存放的就是相关分页数据
-        				  
-        				  var userPage = result.data;
-        				  
-        				  //通过page对象获取 用户列表数据，Page对象中有一个datas属性，用来存放所有用户列表信息
-        				  var users = userPage.datas;
-        				  
-        				
-        				  
-        				  
-        				  //-------------------表格数据----------------
-        				  
-        				  //对users进行循环遍历，通过ajax each 循环 
-        				  //  alt+shift +a 列编辑
-        				  $.each(users,function(i,user){  //users表示对哪个集合进行循环， i为每次遍历的索引，user表示每次循环的临时对象
-        					 //每次循环其实就是一行数据， 即为每次是一个user对象，对行进行拼接，最后把内容赋给tableContext变量
-        					 
-        					tableContext += '<tr>';
-							tableContext += '	<td>'+(i+1)+'</td>'; //当前索引为0，所以要加1
-							tableContext += '	<td><input type="checkbox"></td>';
-							tableContext += '	<td>'+user.account+'</td>';
-							tableContext += '	<td>'+user.username+'</td>';
-							tableContext += '	<td>'+user.email+'</td>';
-							tableContext += '	<td>';
-							tableContext += '		<button type="button" class="btn btn-success btn-xs">';
-							tableContext += '			<i class=" glyphicon glyphicon-check"></i>';
-							tableContext += '		</button>';
-							tableContext += '		<button type="button" onclick="edit('+user.id+')" class="btn btn-primary btn-xs">';
-							tableContext += '			<i class=" glyphicon glyphicon-pencil"></i>';
-							tableContext += '		</button>';
-							tableContext += '		<button type="button" class="btn btn-danger btn-xs">';
-							tableContext += '			<i class=" glyphicon glyphicon-remove"></i>';
-							tableContext += '		</button>';
-							tableContext += '	</td>';
-							tableContext += '/tr>';
-        					            
-        					  
-        				  });
-        				  
-        				  
-        				  
-        				  //-------------------页码数据----------------
-        				  
-        				  
-        				  //对上一页的判断
-        				  
-        				  if(pageNum>1){
-        					  pageContext += '<li><a href="#" onclick="pageQuery('+(pageNum-1)+')">上一页</a></li>';  
-        					  
-        				  }
-        				  
-        				  //对总页码进行循环
-        				  
-        				  for(var i=1;i<=userPage.totalPage;i++){
-        					  
-        					  if(pageNum==i){
-        						  
-        						  pageContext += '<li class="active"><a href="#">'+i+'</a></li>';
-        						  
-        					  }else{
-        					  
-        					  pageContext += '<li><a href="#" onclick="pageQuery('+i+')">'+i+'</a></li>';
-        					  
-        					  }
-        				  }
-        				  
-        				  //对下一页进行判断， 总页码已经在page对象中返回了
-        				  if(pageNum<userPage.totalPage){
-        					  
-        					  pageContext += '<li><a href="#" onclick="pageQuery('+(pageNum+1)+')">下一页</a></li>'; 
-        				  }
-        				  
-        				  
-        				  
-        				  
-        				  //最后把 拼接的变量tableContext,pageContext内容通过ajax渲染到 分页table组件中去
-        				   
-        				  $("#userData").html(tableContext);  //#为id选择器
-        				  
-        				  $(".pagination").html(pageContext); //.为class选择器
-        				  
-        				  
-        			  }else{
-        				  
-        				  layer.msg("分页数据失败，请重试......", {time:2000, icon:5, shift:6}, function(){
-  	                    	
-  	                    });
-        			  }
-        			  
-        		  }
-        		  
-        	  });
-        	  
-          }
-          
-          
-          function edit(id){
-        	  
-        	  window.location.href="${APP_PATH}/user/edit?id="+id;
-          }
-          
-        </script>
+
+				
+			}
+
+		}
+
+		function deleteUser(id, account) {
+
+			layer.confirm("删除用户信息【" + account + "】, 是否继续", {
+				icon : 3,
+				title : '提示'
+			}, function(cindex) {
+
+				//确认之后的操作，进行ajax请求，发送到控制器删除用户信息
+				$.ajax({
+
+					type : "post",
+					url : "${APP_PATH}/user/delete",
+					data : {
+						id : id
+					},
+					success : function(result) {
+
+						if (result.success) {
+							//删除成功，再通过ajax请求，跳转到index页面，展现数据
+
+							pageQuery(1);
+						} else {
+
+							layer.msg("用户信息删除失败", {
+								time : 2000,
+								icon : 5,
+								shift : 6
+							}, function() {
+
+							});
+
+						}
+					}
+
+				});
+
+			}, function(cindex) { //取消
+
+				layer.close(cindex);
+			});
+
+		}
+	</script>
 </body>
 </html>

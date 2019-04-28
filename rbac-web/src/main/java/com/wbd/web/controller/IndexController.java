@@ -36,7 +36,8 @@ public class IndexController {
 
 		String errorMsg = "账号或者密码错误，请重新登录";
 		model.addAttribute("errorMsg", errorMsg);
-		return "redirect:login"; // 重定向到 login.jsp页面，顺便把参数也带出去，地址栏会改变，直接到jsp页面
+		// 重定向到 login.jsp页面，顺便把参数也带出去，地址栏会改变，直接到jsp页面
+		return "redirect:login"; 
 
 	}
 	

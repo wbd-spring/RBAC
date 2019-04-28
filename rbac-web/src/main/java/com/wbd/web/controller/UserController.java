@@ -198,5 +198,43 @@ public class UserController {
 		return result;
 	}
 	
+	
+	@RequestMapping("/delete")
+	@ResponseBody
+	public Object delete(Integer id) {
+		AJAXResult  result = new AJAXResult();
+		
+		try {
+			us.removeUserById(id);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+		}
+		
+		return result;
+	}
+	
+	@RequestMapping("/deleteUsers")
+	@ResponseBody
+	public Object deleteUsers(Integer[] userid) {
+		
+		AJAXResult  result = new AJAXResult();
+		
+		try {
+			
+			Map<String,Object> param = new HashMap<String,Object>();
+			param.put("userids", userid);
+			
+			us.deleteUsers(param);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.setSuccess(false);
+		}
+		
+		return result;
+	}
+	
 
 }
