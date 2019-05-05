@@ -4,20 +4,20 @@
 
 	<select id="pageQueryData"
 		resultType="com.rbac.common.pojo.User">
-		
-		select * 
-		
+
+		select *
+
 		from tb_user
-		
+
 		<where>
 			<if test="queryText!=null">
-			
+
 				and account like concat('%',#{queryText},'%')
 
 			</if>
 		</where>
 
-        order by createtime desc 
+		order by createtime desc
 		limit #{start},#{size}
 
 	</select>
@@ -26,32 +26,59 @@
 	<select id="pageQueryCount" resultType="java.lang.Integer">
 
 		select count(1) from
-		
+
 		tb_user
-		
+
 		<where>
 			<if test="queryText!=null">
-			
+
 				and account like concat('%',#{queryText},'%')
 
 			</if>
 		</where>
 	</select>
-	
-	
-	
-	<delete id="deleteUsers">
-	
-	delete from tb_user where id in
-	
-	<foreach collection="userids" item="userid" open="(" close=")" separator=",">
-	
-	#{userid}
-	</foreach>
-	
 
-	
-	
+
+
+	<delete id="deleteUsers">
+
+		delete from tb_user where id in
+
+		<foreach collection="userids" item="userid" open="(" close=")"
+			separator=",">
+
+			#{userid}
+		</foreach>
+
+
+
+
+	</delete>
+
+
+	<insert id="insertUserRoles">
+
+		insert into tb_user_role(user_id,role_id) values
+
+		<foreach collection="unassignroleids" item="roleid"
+			separator=",">
+
+			(#{userid},#{roleid})
+		</foreach>
+
+
+	</insert>
+
+	<delete id="deletetUserRoles">
+
+		delete from tb_user_role where user_id=#{userid} and role_id in
+
+		<foreach collection="assignroleids" item="roleid" open="("
+			close=")" separator=",">
+
+			${roleid}
+		</foreach>
+
 	</delete>
 
 </mapper>

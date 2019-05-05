@@ -18,4 +18,8 @@ public interface RoleService {
 	Role queryRoleById(Integer id);
 
 	void updateRole(Role role);
+
+	void deleteRoles(Map<String, Object> param);
+
+	List<Role> queryAllRoles();
 }

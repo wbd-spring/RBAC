@@ -31,4 +31,10 @@ public interface RoleDao {
     @Update("update tb_role set name=#{name} where id=#{id}")
 	void updateRole(Role role);
 
+
+	void deleteRoles(Map<String, Object> param);
+
+    @Select("select * from tb_role")
+	List<Role> queryAllRoles();
+
 }

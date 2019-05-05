@@ -60,4 +60,18 @@ public class UserServiceImpl implements UserService {
 		
 	}
 
+	public void insertUserRoles(Map<String, Object> param) {
+		userDao.insertUserRoles(param);
+		
+	}
+
+	public void deletetUserRoles(Map<String, Object> param) {
+		userDao.deletetUserRoles(param);
+		
+	}
+
+	public List<Integer> queryUserRoleids(Integer id) {
+		return userDao.queryUserRoleids(id);
+	}
+
 }

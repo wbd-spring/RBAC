@@ -42,4 +42,13 @@ public class RoleServiceImpl implements RoleService {
 		
 	}
 
+	public void deleteRoles(Map<String, Object> param) {
+		roleDao.deleteRoles(param);
+		
+	}
+
+	public List<Role> queryAllRoles() {
+		return roleDao.queryAllRoles();
+	}
+
 }

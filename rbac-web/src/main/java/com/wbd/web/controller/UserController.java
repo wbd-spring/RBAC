@@ -1,6 +1,7 @@
 package com.wbd.web.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.rbac.common.pojo.AJAXResult;
 import com.rbac.common.pojo.Page;
+import com.rbac.common.pojo.Role;
 import com.rbac.common.pojo.User;
+import com.wbd.manager.service.RoleService;
 import com.wbd.manager.service.UserService;
 
 @Controller
@@ -24,6 +27,9 @@ public class UserController {
 
 	@Autowired
 	private UserService us;
+	
+	@Autowired
+	private RoleService rs;
 
 	/**
 	 * 传统的分页方式 分页核心的参数：页码（pageNum），每页显示的条数（pageSize）， 数据库的sql=select *from tb limit
@@ -182,6 +188,37 @@ public class UserController {
 		return "user/edit";
 	}
 	
+	@RequestMapping("/assign")
+	public String assign(Integer id,Model model) {
+		User user  = us.queryUserById(id);
+		
+		List<Role> roles = rs.queryAllRoles();
+		
+		List<Integer> roleids=us.queryUserRoleids(id);
+		
+		List<Role> unAssignRoles  = new ArrayList<Role>();
+		
+		List<Role> assignRoles  = new ArrayList<Role>();
+		
+		for(Role role:roles) {
+			
+			if(roleids.contains(role.getId())) {
+				
+				assignRoles.add(role);
+			}else {
+				
+				unAssignRoles.add(role);
+			}
+			
+			
+		}
+		
+		model.addAttribute("user", user);
+		model.addAttribute("assignRoles", assignRoles);
+		model.addAttribute("unAssignRoles", unAssignRoles); 
+		return "user/assign";
+	}
+	
 	@RequestMapping("/update")
 	@ResponseBody 
 	public Object update(User user) {
@@ -214,6 +251,45 @@ public class UserController {
 		
 		return result;
 	}
+	
+	
+	
+	@RequestMapping("/doAssign")
+	@ResponseBody
+	public Object deleteUsers(Integer userid,Integer[] unassignroleids) {
+		AJAXResult  result = new AJAXResult();
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("userid", userid);
+		param.put("unassignroleids", unassignroleids);
+		try {
+			us.insertUserRoles(param);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			result.setSuccess(false);
+		}
+		
+		return result;
+	}
+	
+	@RequestMapping("/dounAssign")
+	@ResponseBody
+	public Object dounAssign(Integer userid,Integer[] assignroleids) {
+		
+		AJAXResult  result = new AJAXResult();
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("userid", userid);
+		param.put("assignroleids", assignroleids);
+		try {
+			us.deletetUserRoles(param);
+		
+			result.setSuccess(true);
+		} catch (Exception e) {
+			result.setSuccess(false);
+		}
+		
+		return result;
+	}
+	
 	
 	@RequestMapping("/deleteUsers")
 	@ResponseBody

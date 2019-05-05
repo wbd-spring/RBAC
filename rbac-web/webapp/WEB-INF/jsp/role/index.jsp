@@ -139,16 +139,17 @@
   </div>
   <button type="button" id="queryBtn" class="btn btn-warning"><i class="glyphicon glyphicon-search"></i> 查询</button>
 </form>
-<button type="button" class="btn btn-danger" style="float:right;margin-left:10px;"><i class=" glyphicon glyphicon-remove"></i> 删除</button>
+<button type="button" class="btn btn-danger" onclick="deleteRoles()" style="float:right;margin-left:10px;"><i class=" glyphicon glyphicon-remove"></i> 删除</button>
 <button type="button" class="btn btn-primary" style="float:right;" onclick="window.location.href='${APP_PATH}/role/add'"><i class="glyphicon glyphicon-plus"></i> 新增</button>
 <br>
  <hr style="clear:both;">
           <div class="table-responsive">
+          <form id="roleForm">
             <table class="table  table-bordered">
               <thead>
                 <tr >
                   <th width="30">#</th>
-				  <th width="30"><input type="checkbox"></th>
+				  <th width="30"><input type="checkbox" id="allSelBox"></th>
                   <th>名称</th>
                   <th width="100">操作</th>
                 </tr>
@@ -168,6 +169,7 @@
 
 			  </tfoot>
             </table>
+            </form>
           </div>
 			  </div>
 			</div>
@@ -325,6 +327,55 @@
             	});
             	
             }
+            
+            
+            
+            //选择上面的全选按钮时，让下面的所有记录状态与全选的状态一致
+            
+            $("#allSelBox").click(function(){
+            	
+            	var flag = this.checked;
+            	//让roleData中的每一个checkbox的状态等于 allSelBox的状态
+            	$("#roleData :checkbox").each(function(){
+            		this.checked=flag;
+            	});
+            });
+            
+            //批量删除角色
+            
+            function deleteRoles(){
+            	
+            	var boexs = $("#roleData :checkbox");
+            	var v = $("#roleForm").serialize();
+            	
+            	alert(v);
+            	if(boexs.length==0||v==''){
+            		alert("请选择需要操作的记录");
+            		
+            		
+            	}else{
+            	
+            	$.ajax({
+            		url:"${APP_PATH}/role/deleteAllRoles",
+            		data:v,
+            		type:"POST",
+            		success:function(result){
+            			
+            			if(result.success){
+            				
+            				pageQuery(1);
+            			}else{
+            				alert("删除失败");
+            			}
+            			
+            		}
+            		
+            	});
+            	
+            	}
+            	
+            }
+            
             
             
             function editRole(id){

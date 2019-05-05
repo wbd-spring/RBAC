@@ -25,5 +25,17 @@
 		</where>
 
 	</select>
+	
+	<delete id="deleteRoles">
+	
+	delete from tb_role where id in
+	
+	<foreach collection="roleids" item="roleid" open="(" close=")" separator=","> 
+	
+	#{roleid}
+	
+	</foreach>
+	
+	</delete>
 
 </mapper>

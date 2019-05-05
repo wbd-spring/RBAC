@@ -305,7 +305,7 @@ table tbody td:nth-child(even) {
 															+ user.email
 															+ '</td>';
 													tableContext += '	<td>';
-													tableContext += '		<button type="button" class="btn btn-success btn-xs">';
+													tableContext += '		<button type="button" onclick="roleAssign('+user.id+')" class="btn btn-success btn-xs">';
 													tableContext += '			<i class=" glyphicon glyphicon-check"></i>';
 													tableContext += '		</button>';
 													tableContext += '		<button type="button" onclick="edit('
@@ -400,6 +400,7 @@ table tbody td:nth-child(even) {
 
 			var boxes = $("#userData :checkbox");
 			var v = $("#userForm").serialize();
+			
 			if (boxes.length == 0 || v == '') {
 
 				alert("请求选择用户");
@@ -427,6 +428,12 @@ table tbody td:nth-child(even) {
 				
 			}
 
+		}
+		
+		//跳转到角色分配页面
+		function roleAssign(id){
+			
+			window.location.href="${APP_PATH}/user/assign?id="+id;
 		}
 
 		function deleteUser(id, account) {
