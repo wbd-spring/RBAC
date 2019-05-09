@@ -37,4 +37,10 @@ public interface RoleDao {
     @Select("select * from tb_role")
 	List<Role> queryAllRoles();
 
+
+	void insertRolePermission(Map<String, Object> param);
+	
+	@Delete("delete from tb_role_permission where role_id=#{roleid}")
+	void deleteRolePermission(Map<String, Object> param);
+
 }

@@ -27,12 +27,19 @@ public class RoleController {
 
 		return "role/index";
 	}
-
+	
 	@RequestMapping("/add")
 	public String add() {
 
 		return "role/add";
 	}
+	
+	@RequestMapping("/assign")
+	public String assign() {
+
+		return "role/assign";
+	}
+	
 
 	@RequestMapping("/queryPage")
 	@ResponseBody
@@ -80,6 +87,25 @@ public class RoleController {
 		result.setSuccess(true);
 		return result;
 	}
+	
+	
+	@RequestMapping("/doAssign")
+	@ResponseBody
+	public Object doAssign(Integer roleid,Integer[] permissionids) {
+
+		AJAXResult result = new AJAXResult();
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("roleid", roleid);
+		param.put("permissionids", permissionids);
+		try {
+			rs.insertRolePermission(param);
+			result.setSuccess(true);
+		} catch (Exception e) {
+			result.setSuccess(false);
+		}
+		return result;
+	}
+	
 
 	@RequestMapping("/insert")
 	@ResponseBody
@@ -115,14 +141,12 @@ public class RoleController {
 	@ResponseBody
 	public Object deleteAllRoles(Integer[] roleid) {
 		
-		System.out.println("iiiiiii......");
 		
 		AJAXResult result = new AJAXResult();
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("roleids", roleid);
 		try {
 			
-			System.out.println("ttt......");
 			rs.deleteRoles(param);
 			result.setSuccess(true);
 		} catch (Exception e) {

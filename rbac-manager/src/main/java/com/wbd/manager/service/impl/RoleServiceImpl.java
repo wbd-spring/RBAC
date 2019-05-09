@@ -24,7 +24,6 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	public void deleteRoleById(Integer id) {
-		
 		roleDao.deleteRoleById(id);
 	}
 
@@ -49,6 +48,12 @@ public class RoleServiceImpl implements RoleService {
 
 	public List<Role> queryAllRoles() {
 		return roleDao.queryAllRoles();
+	}
+
+	public void insertRolePermission(Map<String, Object> param) {
+		roleDao.deleteRolePermission(param);
+		roleDao.insertRolePermission(param);
+		
 	}
 
 }

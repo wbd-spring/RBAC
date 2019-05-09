@@ -37,5 +37,14 @@
 	</foreach>
 	
 	</delete>
+	
+	<insert id="insertRolePermission">
+	
+	insert into tb_role_permission(role_id,permission_id) values
+	
+	<foreach collection="permissionids" item="permissionid" separator=",">
+	(#{roleid},#{permissionid})
+	</foreach>
+	</insert>
 
 </mapper>

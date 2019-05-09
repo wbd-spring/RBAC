@@ -252,7 +252,7 @@
             					tableContent += '  <td><input type="checkbox" name="roleid" value="'+role.id+'"></td>';
             	                tableContent += '  <td>'+role.name+'</td>';
             	                tableContent += '  <td>';
-            					tableContent += '      <button type="button" class="btn btn-success btn-xs"><i class=" glyphicon glyphicon-check"></i></button>';
+            					tableContent += '      <button type="button" onclick="assignPermission('+role.id+')" class="btn btn-success btn-xs"><i class=" glyphicon glyphicon-check"></i></button>';
             					tableContent += '      <button type="button" onclick="editRole('+role.id+')" class="btn btn-primary btn-xs"><i class=" glyphicon glyphicon-pencil"></i></button>';
             					tableContent += '	  <button type="button" onclick="deleteRole('+role.id+')" class="btn btn-danger btn-xs"><i class=" glyphicon glyphicon-remove"></i></button>';
             					tableContent += '  </td>';
@@ -377,10 +377,14 @@
             }
             
             
-            
+            //编辑角色
             function editRole(id){
             	
             	window.location.href="${APP_PATH}/role/edit?id="+id;
+            }
+            //为角色分配权限
+            function assignPermission(id){
+            	window.location.href="${APP_PATH}/role/assign?id="+id;
             }
         </script>
   </body>

@@ -1,5 +1,9 @@
 package com.wbd.web.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.rbac.common.pojo.AJAXResult;
+import com.rbac.common.pojo.Permission;
 import com.rbac.common.pojo.User;
+import com.wbd.manager.service.PermissionService;
 import com.wbd.manager.service.UserService;
 
 @Controller
@@ -18,6 +24,9 @@ public class IndexController {
 
 	@Autowired
 	private UserService us;
+	
+	@Autowired
+	private PermissionService ps;
 
 	@RequestMapping("/login")
 	public String index() {
@@ -57,7 +66,39 @@ public class IndexController {
 		 
 		if (dbuser != null) {
 			session.setAttribute("loginUser", dbuser);
+			//只有用户登录成功之后， 才把用户信息存入到session，系统菜单动态加载， 通过用户获取对应的许可的菜单
+			//通过用户id查询用户授权的菜单， 需要关联三张表,user,role,permission
+			
+			List<Permission> userPermission = ps.queryPermissionByUserId(dbuser.getId());
+			
+			//下面的过程是把从数据库中获取到许可进行 对象化， 并且组装成有父子关系的许可，然后存入session中，
+			//在通过前台页面进行渲染出来
+			Map<Integer, Permission> permissionMap = new HashMap<Integer, Permission>();
+			Permission  root = null;
+			for(Permission p:userPermission)
+			{
+				
+				permissionMap.put(p.getId(), p);
+			}
+			
+			for(Permission p:userPermission)
+			{
+				Permission child = p;
+				if(child.getPid()==0) {
+					root = p;
+				}else {
+					
+					Permission  parent= 	permissionMap.get(child.getPid());
+					
+					parent.getChildren().add(child);
+				}
+				
+			}
+			//存入session中
+			session.setAttribute("rootPermission", root);
+
 			result.setSuccess(true);
+			
 		}else {
 			
 			result.setSuccess(false);
