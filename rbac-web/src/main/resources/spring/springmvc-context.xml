@@ -7,28 +7,67 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
-   <!-- 扫描springmvc的控制器   use-default-filters="false 这个表示不扫描其他的类， 只扫描有注解@controller的类-->
-    <context:component-scan base-package="com.wbd.*" use-default-filters="false" >
-        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
-    </context:component-scan>
-    
-    <!-- 不拦截静态资源 -->
-    <mvc:default-servlet-handler/>
-    
-    <mvc:annotation-driven />
-  
-    
-    <!-- springmvc 视图解析器的配置 -->
-    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
-        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-        <property name="prefix" value="/WEB-INF/jsp/"/>
-        <property name="suffix" value=".jsp"/>
-    </bean>
-    
+	<!-- 扫描springmvc的控制器 use-default-filters="false 这个表示不扫描其他的类， 只扫描有注解@controller的类 -->
+	<context:component-scan base-package="com.wbd.*"
+		use-default-filters="false">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
 
-    <!-- 文件上传 -->
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" p:defaultEncoding="UTF-8" >
-        <property name="maxUploadSize" value="2097152"/>
-        <property name="resolveLazily" value="true"/>
-    </bean>
+	<!-- 不拦截静态资源 -->
+	<mvc:default-servlet-handler />
+
+	<mvc:annotation-driven />
+
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/login" />
+			<mvc:exclude-mapping path="/doAjaxLogin" /> 
+			<mvc:exclude-mapping path="/bootstrap/**" />
+			<mvc:exclude-mapping path="/css/**" />
+			<mvc:exclude-mapping path="/fonts/**" />
+			<mvc:exclude-mapping path="/img/**" />
+			<mvc:exclude-mapping path="/jquery/**" />
+			<mvc:exclude-mapping path="/layer/**" />
+			<mvc:exclude-mapping path="/script/**" />
+			<mvc:exclude-mapping path="/ztree/**" />
+			<bean class="com.wbd.web.interceptor.LoginInteceptor"/>
+		</mvc:interceptor>
+
+
+<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/login" />
+			<mvc:exclude-mapping path="/doAjaxLogin" /> 
+			<mvc:exclude-mapping path="/bootstrap/**" />
+			<mvc:exclude-mapping path="/css/**" />
+			<mvc:exclude-mapping path="/fonts/**" />
+			<mvc:exclude-mapping path="/img/**" />
+			<mvc:exclude-mapping path="/jquery/**" />
+			<mvc:exclude-mapping path="/layer/**" />
+			<mvc:exclude-mapping path="/script/**" />
+			<mvc:exclude-mapping path="/ztree/**" />
+			<bean class="com.wbd.web.interceptor.AuthInterceptor"/>
+		</mvc:interceptor>
+
+	</mvc:interceptors>
+
+	<!-- springmvc 视图解析器的配置 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+
+	<!-- 文件上传 -->
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+		p:defaultEncoding="UTF-8">
+		<property name="maxUploadSize" value="2097152" />
+		<property name="resolveLazily" value="true" />
+	</bean>
 </beans>

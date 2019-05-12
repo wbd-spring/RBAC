@@ -1,8 +1,10 @@
 package com.wbd.web.controller;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
@@ -33,6 +35,11 @@ public class IndexController {
 		return "login"; // 重定向到 login.jsp页面
 	}
 
+	@RequestMapping("/error")
+	public String error() {
+		return "error"; 
+	}
+	
 	@RequestMapping(value = "/doLogin", method = RequestMethod.POST)
 	public String doLogin(User user, Model model) {
 
@@ -75,11 +82,17 @@ public class IndexController {
 			//在通过前台页面进行渲染出来
 			Map<Integer, Permission> permissionMap = new HashMap<Integer, Permission>();
 			Permission  root = null;
+			Set<String> uriSet = new HashSet<String>();
 			for(Permission p:userPermission)
 			{
 				
 				permissionMap.put(p.getId(), p);
+				
+				if(p.getUrl()!=null && !"".equals(p.getUrl())) {
+					uriSet.add(session.getServletContext().getContextPath()+p.getUrl());
+				}
 			}
+			session.setAttribute("authUriSet", uriSet);
 			
 			for(Permission p:userPermission)
 			{
